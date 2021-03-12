@@ -40,10 +40,6 @@ def lockdown_interactions(yellow_contacts: float, orange_contacts: float) -> cv.
         layers='c'
     )
 
-# non-compulsory masks from may (but lower transmissibility due to summer), then compulsory masks from september
-def masks(summer_masks: float, winter_masks: float) -> cv.Intervention:
-    return cv.change_beta(days=[lockdown_end, summer_end], changes=[summer_masks, winter_masks], layers=['s', 'w', 'c'])
-
 # regional lockdowns to avoid imported cases
 def imported_cases(summer_imp: float, yellow_imp: float, orange_imp: float) -> cv.Intervention:
     return cv.dynamic_pars(
@@ -86,9 +82,6 @@ def get_interventions(p: Dict[str, float]) -> List[cv.Intervention]:
 
     if p.get('yellow_contacts') is not None and p.get('orange_contacts') is not None:
         interventions.append(lockdown_interactions(p['yellow_contacts'], p['orange_contacts']))
-
-    if p.get('summer_masks') is not None and p.get('winter_masks') is not None:
-        interventions.append(masks(p['summer_masks'], p['winter_masks']))
 
     if p.get('summer_imp') is not None and p.get('yellow_imp') is not None and p.get('orange_imp') is not None:
         interventions.append(imported_cases(p['summer_imp'], p['yellow_imp'], p['orange_imp']))
