@@ -26,11 +26,15 @@ def contact_tracing(trace_prob: float, trace_time: float) -> cv.Intervention:
 
 # smart working from 08/03 to 18/05
 def smart_working(work_contacts: float) -> cv.Intervention:
-    return cv.clip_edges(days=[lockdown_start, lockdown_end], changes=[work_contacts, 1.0], layers='w')
+    return cv.clip_edges(
+        days=[lockdown_start, lockdown_end, red_zone],
+        changes=[work_contacts, 1.0, work_contacts],
+        layers='w'
+    )
 
 # schools closed from 08/03 to 15/09, then blended modality until orange zone
 def schools_closed(school_contacts: float) -> cv.Intervention:
-    return cv.clip_edges(days=[lockdown_start, summer_end, red_zone], changes=[0.0, school_contacts, 0.0], layers='s')
+    return cv.clip_edges(days=[start_day, summer_end, red_zone], changes=[0.0, school_contacts, 0.0], layers='s')
 
 # lockdown from 08/03, then no lockdown, then orange/yellow zones
 def lockdown_interactions(yellow_contacts: float, orange_contacts: float) -> cv.Intervention:
@@ -44,8 +48,8 @@ def lockdown_interactions(yellow_contacts: float, orange_contacts: float) -> cv.
 def imported_cases(summer_imp: float, yellow_imp: float, orange_imp: float) -> cv.Intervention:
     return cv.dynamic_pars(
         n_imports=dict(
-            days=[lockdown_end, orange_zone_1, yellow_zone_1, orange_zone_2, yellow_zone_2, red_zone],
-            vals=[summer_imp, orange_imp, yellow_imp, orange_imp, yellow_imp, 0.0]
+            days=[lockdown_start, lockdown_end, orange_zone_1, yellow_zone_1, orange_zone_2, yellow_zone_2, red_zone],
+            vals=[0.0, summer_imp, orange_imp, yellow_imp, orange_imp, yellow_imp, 0.0]
         )
     )
 
