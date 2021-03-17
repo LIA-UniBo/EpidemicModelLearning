@@ -9,8 +9,8 @@ def get_regional_data(scaling_factor: float = 1, region: str = 'Emilia-Romagna')
     # reindex using date
     df.index = [pd.to_datetime(d).date() for d in df['data']]
     # keep just some columns and rename them
-    df = df[['ricoverati_con_sintomi', 'terapia_intensiva', 'deceduti', 'tamponi']]
-    df.columns = ['n_severe', 'n_critical', 'cum_deaths', 'new_tests']
+    df = df[['ricoverati_con_sintomi', 'terapia_intensiva', 'totale_casi', 'deceduti', 'tamponi']]
+    df.columns = ['n_severe', 'n_critical', 'cum_diagnoses', 'cum_deaths', 'new_tests']
     # compute daily tests from cumulative value
     df['new_tests'] = [t2 - t1 for t1, t2 in zip([0] + list(df['new_tests'][:-1]), df['new_tests'])]
     # rescaling according to given factor
