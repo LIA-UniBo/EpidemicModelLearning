@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
-def get_sample_weights(df, method='proportional', **kwargs):
+def get_sample_weights(df: pd.DataFrame, method: str = 'proportional', **kwargs) -> np.array:
     if method == 'uniform':
         sw = np.ones_like(df.index)
     elif method == 'splits':
@@ -23,7 +23,7 @@ def get_sample_weights(df, method='proportional', **kwargs):
         raise ValueError(f'{method} is not a supported method')
     return sw
 
-def get_custom_estimator(loss='mse', sample_weight=None, normalize=True):
+def get_custom_estimator(loss: str = 'mse', sample_weight: np.array = None, normalize: bool = True):
     if loss.lower() == 'mse':
         loss = mean_squared_error
     elif loss.lower() == 'mae':
@@ -40,3 +40,11 @@ def get_custom_estimator(loss='mse', sample_weight=None, normalize=True):
             y_pred = np.array(y_pred) / factor
         return loss(y_true, y_pred, sample_weight=sample_weight)
     return func
+
+def compute_violation(pars: dict, orderings: list) -> float:
+    violation = 1.
+    for ordering in orderings:
+        ordering = [pars[attribute] for attribute in ordering]
+        for greater, lower in zip(ordering[:-1], ordering[1:]):
+            violation *= max(1, lower / greater)
+    return violation
