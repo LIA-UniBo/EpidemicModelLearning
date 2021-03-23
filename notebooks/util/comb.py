@@ -1,4 +1,7 @@
-def cartesian_product(multiple_parameters: list, parameters: dict):
+from typing import List
+
+
+def cartesian_product(multiple_parameters: list, parameters: dict) -> List[dict]:
     if len(multiple_parameters) == 0:
         return [parameters]
     else:

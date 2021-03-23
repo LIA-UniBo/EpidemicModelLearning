@@ -2,6 +2,7 @@ import pandas as pd
 
 URL = 'https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv'
 
+
 def get_regional_data(scaling_factor: float = 1, region: str = 'Emilia-Romagna') -> pd.DataFrame:
     df = pd.read_csv(URL)
     # extract data of a single region
