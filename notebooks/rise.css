@@ -11,9 +11,16 @@
 /* .reveal .slides > section > section { */
 /*   text-align: left; } */
 
-.reveal {
+.reveal .cell {
   font-family: "Helvetica NeueL", "HelveticaNeue-Thin", Helvetica, sans-serif;
   font-size: 28px;
+  font-weight: normal;
+  color: #222;
+}
+
+.reveal .code_cell {
+  font-family: "Helvetica NeueL", "HelveticaNeue-Thin", Helvetica, sans-serif;
+  font-size: 20px;
   font-weight: normal;
   color: #222;
 }
