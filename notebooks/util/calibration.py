@@ -57,3 +57,13 @@ def compute_violation(pars: dict, orderings: list) -> float:
 
 def fixed_param(trial: op.Trial, name: str, value: float = 0.) -> float:
     return trial.suggest_float(name, value, value)
+
+
+def inspect_study(study, top=0.1):
+    results = pd.DataFrame([dict(objective=t.value, **t.params) for t in study.trials]).sort_values('objective')
+    top = top if isinstance(top, int) else int(np.ceil(top * len(results)))
+    summary = results.head(top).describe()
+    summary = summary.loc[['count', 'min', 'max', 'mean', '50%', 'std']].rename({'50%': 'median'})
+    summary = summary.append(pd.Series({'objective': study.best_value, **study.best_params}, name='best'))
+    summary = summary.transpose().astype({'count': 'int'})
+    return results, summary

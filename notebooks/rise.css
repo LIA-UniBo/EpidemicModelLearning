@@ -20,7 +20,7 @@
 
 .reveal .code_cell {
   font-family: "Helvetica NeueL", "HelveticaNeue-Thin", Helvetica, sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: normal;
   color: #222;
 }
@@ -156,11 +156,11 @@
 
 .reveal code {
   background-color: #ffffff;
-  font-size: 0.7em;
+  font-size: 1.0em;
 }
 
 .reveal pre code {
-  font-size: 0.6em;
+  font-size: 1.0em;
   background-color: #f0f0f0;
   max-height: 700px;
 }

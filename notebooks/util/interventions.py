@@ -30,7 +30,7 @@ class Interventions:
 
     # SENSITIVITY: https://www.health.harvard.edu/blog/which-test-is-best-for-covid-19-2020081020734
     def tests(self) -> cv.Intervention:
-        return cv.test_num(self.test_column, quar_policy='both', sensitivity=0.8, do_plot=False)
+        return cv.test_num(self.test_column, quar_policy='both', sensitivity=0.8)
 
     def contact_tracing(self) -> cv.Intervention:
         defaults = dict(
@@ -56,8 +56,7 @@ class Interventions:
                 s=defaults['school_trace_time'],
                 w=defaults['work_trace_time'],
                 c=defaults['casual_trace_time']
-            ),
-            do_plot=False
+            )
         )
 
     def smart_working(self) -> cv.Intervention:
@@ -91,11 +90,12 @@ class Interventions:
         defaults = dict(
             init_casual_contacts=1.,
             summer_casual_contacts=1.,
-            yellow_casual_contacts=1.,
+            yellow_casual_contacts=self.parameters.get('casual_contacts'),
             orange_casual_contacts=self.parameters.get('casual_contacts'),
             red_casual_contacts=0.
         )
         defaults.update(self.parameters)
+        assert defaults['yellow_casual_contacts'] is not None, 'yellow_casual_contacts is required'
         assert defaults['orange_casual_contacts'] is not None, 'orange_casual_contacts is required'
         v = self.get_values(postfix='_casual_contacts', **defaults)
         return cv.clip_edges(days=v.index.values, changes=v.values, layers='c')
@@ -103,11 +103,11 @@ class Interventions:
     # regional lockdowns to avoid imported cases
     def imported_cases(self) -> cv.Intervention:
         defaults = dict(
-            init_imports=0.,
+            init_imports=self.parameters.get('init_imports', 0.),
             summer_imports=self.parameters.get('init_imports', 0.),
             yellow_imports=self.parameters.get('init_imports', 0.),
             orange_imports=self.parameters.get('init_imports', 0.),
-            red_imports=self.parameters.get('init_imports', 0.)
+            red_imports=0.
         )
         defaults.update(self.parameters)
         v = self.get_values(postfix='_imports', **defaults)
@@ -116,7 +116,7 @@ class Interventions:
     # summer viral load reduction
     def viral_load_reduction(self) -> cv.Intervention:
         assert 'init_beta' in self.parameters
-        days = [0, self.get_delta('2020-05-15'), self.get_delta('2020-09-15')]
+        days = [0, self.get_delta('2020-05-08'), self.get_delta('2020-09-08')]
         defaults = dict(
             init_beta=self.parameters['init_beta'],
             init_symp=self.parameters.get('init_symp', 1.),
