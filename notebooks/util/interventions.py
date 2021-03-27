@@ -116,7 +116,7 @@ class Interventions:
     # summer viral load reduction
     def viral_load_reduction(self) -> cv.Intervention:
         assert 'init_beta' in self.parameters
-        days = [0, self.get_delta('2020-05-08'), self.get_delta('2020-09-08')]
+        days = [0, self.get_delta('2020-05-18'), self.get_delta('2020-10-01')]
         defaults = dict(
             init_beta=self.parameters['init_beta'],
             init_symp=self.parameters.get('init_symp', 1.),

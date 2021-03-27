@@ -46,12 +46,12 @@ def get_custom_estimator(loss: str = 'mse', sample_weight: np.array = None, norm
     return func
 
 
-def compute_violation(pars: dict, orderings: list) -> float:
+def compute_violation(pars: dict, orderings: list, eps: float = 1e-9) -> float:
     violation = 1.
     for ordering in orderings:
         ordering = [pars[attribute] for attribute in ordering]
-        for greater, lower in zip(ordering[:-1], ordering[1:]):
-            violation *= max(1, lower / greater)
+        for higher, lower in zip(ordering[:-1], ordering[1:]):
+            violation *= max(1, (lower + eps) / (higher + eps))
     return violation
 
 
