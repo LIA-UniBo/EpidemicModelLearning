@@ -3,7 +3,6 @@
         "pop_type": "hybrid",
         "location": "italy",
         "start_day": "2020-02-24",
-        "end_day": "2021-03-27",
         "pop_size": 40000,
         "pop_scale": 10,
         "rescale": true,
