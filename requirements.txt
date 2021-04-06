@@ -83,6 +83,7 @@ prompt-toolkit==3.0.14
 psutil==5.8.0
 ptyprocess==0.7.0
 pycparser==2.20
+pyDOE==0.3.8
 Pygments==2.7.4
 pyparsing==2.4.7
 pyperclip==1.8.2
@@ -111,6 +112,7 @@ statsmodels==0.12.2
 stevedore==3.3.0
 terminado==0.9.2
 testpath==0.4.4
+threadpoolctl==2.1.0
 tornado==6.1
 tqdm==4.58.0
 traitlets==5.0.5

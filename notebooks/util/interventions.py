@@ -1,9 +1,12 @@
 import pandas as pd
 from typing import List, Dict
 import covasim as cv
+import json
+
+from numba.cuda import local
 
 
-class Interventions:
+class CalibrationInterventions:
     def __init__(self, start_date='2020-02-24', test_column='new_tests', **kwargs: Dict[str, float]):
         self.start_date = start_date
         self.test_column = test_column
@@ -150,3 +153,53 @@ class Interventions:
             self.viral_load_reduction
         ]
         return [inter() for inter in interventions if inter.__name__ not in exclude]
+
+
+class SamplingInterventions:
+
+    @staticmethod
+    def get_all(init_zone: int, actuated_zone: int, num_tests: int, actuation_day: int = 15) -> List[cv.Intervention]:
+        mapping = {
+            0: 'init_',
+            1: 'yellow_',
+            2: 'orange_',
+            3: 'red_'
+        }
+        with open('res/parameters.json', 'r') as json_file:
+            j = json.load(json_file)
+        interv_params = j['intervention_params']
+        tests = cv.test_num(num_tests, quar_policy='both', sensitivity=0.8)
+        tracing = cv.contact_tracing(
+            trace_probs=dict(
+                h=interv_params['household_trace_prob'],
+                s=interv_params['school_trace_prob'],
+                w=interv_params['work_trace_prob'],
+                c=interv_params['casual_trace_prob']
+            ),
+            trace_time=dict(
+                h=interv_params['household_trace_time'],
+                s=interv_params['school_trace_time'],
+                w=interv_params['work_trace_time'],
+                c=interv_params['casual_trace_time']
+            )
+        )
+        smart_working = cv.clip_edges(
+            days=[0, actuation_day],
+            changes=[interv_params[mapping[init_zone] + 'work_contacts'], interv_params[mapping[actuated_zone] + 'work_contacts']],
+            layers='w'
+        )
+        schools_closed = cv.clip_edges(
+            days=[0, actuation_day],
+            changes=[interv_params[mapping[init_zone] + 'school_contacts'], interv_params[mapping[actuated_zone] + 'school_contacts']],
+            layers='s'
+        )
+        lockdown = cv.clip_edges(
+            days=[0, actuation_day],
+            changes=[interv_params[mapping[init_zone] + 'casual_contacts'], interv_params[mapping[actuated_zone] + 'casual_contacts']],
+            layers='c'
+        )
+        imports = cv.dynamic_pars(n_imports=dict(
+            days=[0, actuation_day],
+            vals=[interv_params[mapping[init_zone] + 'imports'], interv_params[mapping[actuated_zone] + 'imports']]
+        ))
+        return [tests, tracing, smart_working, schools_closed, lockdown, imports]
