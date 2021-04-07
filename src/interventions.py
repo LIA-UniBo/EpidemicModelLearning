@@ -145,7 +145,7 @@ def get_interventions(periods: Dict[int, str],
     ]
 
 
-def get_calibration_interventions(parameters: Dict[str, float]):
+def get_calibration_interventions(parameters: Dict[str, float], daily_tests: object = 'new_tests'):
     return get_interventions(
         periods={get_delta(d): z for d, z in {
             DEFAULT_START: 'init',
@@ -159,11 +159,15 @@ def get_calibration_interventions(parameters: Dict[str, float]):
             '2021-02-21': 'orange',
             '2021-03-01': 'red'
         }.items()},
-        parameters=parameters
+        parameters=parameters,
+        daily_tests=daily_tests
     )
 
 
-def get_sampling_interventions(zones: List[str], parameters: Dict[str, float], interval: int = 15):
+def get_sampling_interventions(zones: List[str],
+                               parameters: Dict[str, float],
+                               interval: int = 15,
+                               daily_tests: object = 'new_tests'):
     mapping = dict(W='init', Y='yellow', O='orange', R='red')
     return get_interventions(
         periods={
@@ -172,5 +176,6 @@ def get_sampling_interventions(zones: List[str], parameters: Dict[str, float], i
             get_delta('2020-05-18'): 'summer',
             **{get_delta(f'2020-11-01') + interval * i: mapping[z] for i, z in enumerate(zones)}
         },
-        parameters=parameters
+        parameters=parameters,
+        daily_tests=daily_tests
     )
