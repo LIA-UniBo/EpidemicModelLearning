@@ -32,10 +32,3 @@ def process_dataset(data, rolling_days=7):
         x.append(inputs)
         y.append(outputs)
     return np.array(x), np.array(y)
-
-
-if __name__ == '__main__':
-    data = pd.read_csv('../res/dataset.csv')
-    xx, yy = process_dataset(data)
-    print(xx.shape)
-    print(yy.shape)
