@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 one_hot_zones = {
     'W': [1, 0, 0, 0],
@@ -9,7 +11,7 @@ one_hot_zones = {
 }
 
 
-def process_dataset(data, rolling_days=7):
+def process_dataset(data, rolling_days=7, val_split=0.2):
     def process_series(series):
         # retrieve initial and actuated zone and map to one hot vector
         init_zone = one_hot_zones[series['init_zone']]
@@ -31,4 +33,13 @@ def process_dataset(data, rolling_days=7):
         inputs, outputs = process_series(s)
         x.append(inputs)
         y.append(outputs)
-    return np.array(x), np.array(y)
+
+    xs, ys = StandardScaler(), MinMaxScaler()
+    if val_split is None:
+        x, y = xs.fit_transform(x), ys.fit_transform(y)
+        return (x, y), (xs, ys)
+    else:
+        xt, xv, yt, yv = train_test_split(np.array(x), np.array(y), test_size=val_split, shuffle=True, random_state=0)
+        xt, yt = xs.fit_transform(x), ys.fit_transform(y)
+        xv, yv = xs.transform(xv), ys.transform(yv)
+        return (xt, yt), (xv, yv), (xs, ys)
