@@ -22,6 +22,8 @@ def process_dataset(data, rolling_days=7, val_split=0.2):
         input_df = df.head(len(df) // 2).copy()
         # perform rolling average on hospitalized cases
         input_df['hosp'] = input_df['hosp'].rolling(rolling_days).mean()
+        input_df['diag'] = input_df['diag'].rolling(rolling_days).mean()
+        input_df['dead'] = input_df['dead'].rolling(rolling_days).mean()
         # return the last two weeks of data with the zones as input features
         input_vector = list(input_df.iloc[rolling_days - 1:].values.transpose().flatten()) + init_zone + actuated_zone
         # return the peak of hospitalized and the number of dead individuals in the second half period
