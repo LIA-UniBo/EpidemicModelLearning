@@ -17,17 +17,14 @@ def process_dataset(data, rolling_days=7, val_split=0.2):
         init_zone = one_hot_zones[series['init_zone']]
         actuated_zone = one_hot_zones[series['actuated_zone']]
         # get input and output data (first half of the series and second half of the series)
-        df = pd.DataFrame(series.values[:-2].reshape(-1, 3), columns=['hosp', 'diag', 'dead'])
+        df = pd.DataFrame(series.values[:-2].reshape(-1, 3).astype('float'), columns=['hosp', 'diag', 'dead'])
         output_df = df.tail(len(df) // 2).copy()
         input_df = df.head(len(df) // 2).copy()
-        # perform rolling average on hospitalized cases
-        input_df['hosp'] = input_df['hosp'].rolling(rolling_days).mean()
-        input_df['diag'] = input_df['diag'].rolling(rolling_days).mean()
-        input_df['dead'] = input_df['dead'].rolling(rolling_days).mean()
-        # return the last two weeks of data with the zones as input features
+        # perform rolling average on each column then return the last two weeks of data with the zones as features
+        input_df = input_df.rolling(rolling_days).mean()
         input_vector = list(input_df.iloc[rolling_days - 1:].values.transpose().flatten()) + init_zone + actuated_zone
-        # return the peak of hospitalized and the number of dead individuals in the second half period
-        output_vector = [output_df['hosp'].max(), output_df['dead'].iloc[-1] - input_df['dead'].iloc[-1]]
+        # return the peak of hospitalized and the number of dead and diagnosed individuals in the second half period
+        output_vector = [output_df['hosp'].max(), output_df['diag'].sum(), output_df['dead'].sum()]
         return input_vector, output_vector
 
     x, y = [], []
@@ -42,6 +39,6 @@ def process_dataset(data, rolling_days=7, val_split=0.2):
         return (x, y), (xs, ys)
     else:
         xt, xv, yt, yv = train_test_split(np.array(x), np.array(y), test_size=val_split, shuffle=True, random_state=0)
-        xt, yt = xs.fit_transform(x), ys.fit_transform(y)
+        xt, yt = xs.fit_transform(xt), ys.fit_transform(yt)
         xv, yv = xs.transform(xv), ys.transform(yv)
         return (xt, yt), (xv, yv), (xs, ys)
