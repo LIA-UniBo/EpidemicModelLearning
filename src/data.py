@@ -31,7 +31,7 @@ def get_real_samples(region: str, zones: dict, scaling_factor: float = 1, time_i
 
     samples = {
         days: (init_zone, actuated_zone)
-        for (_, init_zone), (days, actuated_zone) in zip(zones[:-3], zones[1:-2])
+        for (_, init_zone), (days, actuated_zone) in zip([(range(0), 'W')] + zones[:-2], zones[:-1])
     }
 
     df = get_regional_data(scaling_factor, region)
